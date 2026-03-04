@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Running the Game
 
-Open `tictactoe.html` directly in any browser — no build step, server, or dependencies required.
+Open `index.html` directly in any browser — no build step, server, or dependencies required. Also hosted via GitHub Pages at `https://oisinmocallaghan.github.io/tictactoe/`.
 
 ## Architecture
 
-The entire project is a single self-contained file (`tictactoe.html`) with three sections:
+The entire project is a single self-contained file (`index.html`) with three sections:
 
 - **CSS** (`<style>`): Dark-themed UI using a navy/red/teal palette (`#1a1a2e`, `#e94560`, `#a8dadc`). Layout is CSS Grid for the 3×3 board.
 - **HTML**: Static board of 9 `.cell` divs with `data-i` attributes (0–8) used as indices into the game state array.
