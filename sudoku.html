@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sudoku</title>
+  <title>Katy's Sudoku Game</title>
   <style>
     :root { --cell: min(52px, 9.8vw); }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,18 +14,38 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      background: #1a1a2e;
+      background: #1a0a1a;
       font-family: 'Segoe UI', sans-serif;
-      color: #eee;
+      color: #ffe0f0;
       padding: 16px;
       gap: 0;
     }
 
-    h1 {
-      font-size: 2.5rem;
+    /* ── Banner ── */
+    .banner {
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(135deg, #6b1a4a 0%, #a0205e 50%, #6b1a4a 100%);
+      border: 2px solid #ff69b4;
+      border-radius: 16px;
+      text-align: center;
+      padding: 1rem 1.5rem 0.8rem;
+      margin-bottom: 1.2rem;
+      box-shadow: 0 4px 24px #ff69b455;
+    }
+
+    .banner h1 {
+      font-size: 2rem;
       letter-spacing: 2px;
-      color: #e94560;
-      margin-bottom: 0.6rem;
+      color: #fff;
+      text-shadow: 0 0 12px #ff69b4aa;
+      margin-bottom: 0.2rem;
+    }
+
+    .banner .subtitle {
+      font-size: 0.85rem;
+      color: #ffb6d9;
+      letter-spacing: 1px;
     }
 
     .difficulty {
@@ -36,9 +56,9 @@
 
     .diff-btn {
       padding: 0.35rem 1rem;
-      border: 2px solid #0f3460;
-      background: #16213e;
-      color: #888;
+      border: 2px solid #6b1a4a;
+      background: #2d0f2d;
+      color: #cc6699;
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.85rem;
@@ -47,9 +67,9 @@
     }
 
     .diff-btn.active, .diff-btn:hover {
-      background: #0f3460;
-      color: #eee;
-      border-color: #a8dadc;
+      background: #6b1a4a;
+      color: #ffe0f0;
+      border-color: #ff69b4;
     }
 
     .stats {
@@ -59,15 +79,15 @@
     }
 
     .stat { text-align: center; }
-    .stat .lbl { font-size: 0.72rem; color: #666; }
-    .stat .val { font-size: 1.2rem; font-weight: bold; color: #a8dadc; }
-    #mistakes { color: #e94560; }
+    .stat .lbl { font-size: 0.72rem; color: #99557a; }
+    .stat .val { font-size: 1.2rem; font-weight: bold; color: #ff69b4; }
+    #mistakes { color: #ff1493; }
 
     #grid {
       display: grid;
       grid-template-columns: repeat(9, var(--cell));
       grid-template-rows: repeat(9, var(--cell));
-      border: 3px solid #a8dadc;
+      border: 3px solid #ff69b4;
     }
 
     .cell {
@@ -76,23 +96,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid #253a5e;
+      border: 1px solid #4a1a3a;
       font-size: clamp(0.85rem, 3.2vw, 1.35rem);
       font-weight: bold;
-      background: #16213e;
+      background: #2d0f2d;
       user-select: none;
       cursor: pointer;
       transition: background 0.1s;
     }
 
-    .cell[data-c="3"], .cell[data-c="6"] { border-left: 2px solid #a8dadc; }
-    .cell[data-r="3"], .cell[data-r="6"] { border-top: 2px solid #a8dadc; }
+    .cell[data-c="3"], .cell[data-c="6"] { border-left: 2px solid #ff69b4; }
+    .cell[data-r="3"], .cell[data-r="6"] { border-top: 2px solid #ff69b4; }
 
-    .cell.given   { color: #ddd; }
-    .cell.editable { color: #a8dadc; }
-    .cell.selected { background: #1e3f7a !important; }
-    .cell.highlighted { background: #1a2a4e; }
-    .cell.error   { color: #e94560 !important; }
+    .cell.given    { color: #ffe0f0; }
+    .cell.editable { color: #ff9ecf; }
+    .cell.selected { background: #7a1a5a !important; }
+    .cell.highlighted { background: #3d1030; }
+    .cell.error    { color: #ff1493 !important; }
 
     #numpad {
       display: flex;
@@ -103,10 +123,10 @@
     .num-btn {
       width: calc(var(--cell) * 0.88);
       height: calc(var(--cell) * 0.88);
-      background: #16213e;
-      border: 2px solid #0f3460;
+      background: #2d0f2d;
+      border: 2px solid #6b1a4a;
       border-radius: 8px;
-      color: #a8dadc;
+      color: #ff69b4;
       font-size: clamp(0.85rem, 3vw, 1.2rem);
       font-weight: bold;
       cursor: pointer;
@@ -114,7 +134,7 @@
       transition: background 0.1s;
     }
 
-    .num-btn:hover { background: #0f3460; }
+    .num-btn:hover { background: #6b1a4a; }
 
     .actions {
       display: flex;
@@ -133,24 +153,27 @@
       transition: all 0.15s;
     }
 
-    #btn-new   { background: #e94560; color: #fff; }
-    #btn-new:hover { background: #c73652; }
-    #btn-erase { background: #16213e; color: #888; border: 2px solid #0f3460; }
-    #btn-erase:hover { background: #0f3460; color: #eee; }
-    #btn-check { background: #16213e; color: #a8dadc; border: 2px solid #a8dadc; }
-    #btn-check:hover { background: #0f3460; }
+    #btn-new   { background: #ff69b4; color: #1a0a1a; }
+    #btn-new:hover { background: #e05598; }
+    #btn-erase { background: #2d0f2d; color: #99557a; border: 2px solid #6b1a4a; }
+    #btn-erase:hover { background: #6b1a4a; color: #ffe0f0; }
+    #btn-check { background: #2d0f2d; color: #ff69b4; border: 2px solid #ff69b4; }
+    #btn-check:hover { background: #6b1a4a; }
 
     #message {
       margin-top: 0.7rem;
       font-size: 1.1rem;
       min-height: 1.5em;
       font-weight: bold;
-      color: #4ecca3;
+      color: #ff69b4;
     }
   </style>
 </head>
 <body>
-  <h1>Sudoku</h1>
+  <div class="banner">
+    <h1>🌸 Katy's Sudoku Game 🌸</h1>
+    <div class="subtitle">Have fun & good luck! ♡</div>
+  </div>
 
   <div class="difficulty">
     <button class="diff-btn active" data-d="easy">Easy</button>
@@ -399,9 +422,9 @@
         msg.textContent = '🎉 Congratulations! Puzzle solved!';
         clearInterval(clockInterval);
       } else {
-        msg.style.color = '#a8dadc';
+        msg.style.color = '#ffb6d9';
         msg.textContent = `${correct} correct · ${remaining} remaining`;
-        setTimeout(() => { msg.textContent = ''; msg.style.color = '#4ecca3'; }, 2500);
+        setTimeout(() => { msg.textContent = ''; msg.style.color = '#ff69b4'; }, 2500);
       }
     });
 
